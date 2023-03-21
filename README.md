@@ -2,7 +2,7 @@
 This small .Net Core console app can be used to post RSS feed news to a Discord channel using a webhook.
 It is customizable and able to filter certain feed categories.
 
-![](assets/screenshot_discord_rss_post.png)
+![](Assets/screenshot_discord_rss_post.png)
 
 ## Prerequisites
 
