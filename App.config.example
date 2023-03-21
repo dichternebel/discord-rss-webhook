@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="Webhook" value="https://discord.com/api/webhooks/{webhook.id}/{webhook.token}"/>
+    <add key="Feed" value="https://lorem-rss.herokuapp.com/feed/"/>
+    <!-- Optional: Update interval in minutes, if empty or less than 1m or greater than 30d will default to 10m -->
+    <add key="UpdateInterval" value=""/>
+    <!-- Optional: Comma separated feed categories to be used as a filter, if empty all are used -->
+    <add key="Categories" value=""/>
+    <!-- Optional: A "bot" user name you like, if empty a default will be used -->
+    <add key="UserName" value=""/>
+    <!-- Optional: A "bot" avatar URL you like, if empty the feed icon will be used -->
+    <add key="Avatar" value=""/>
+    <!-- Optional: A custom content message showing up before the embeds, if empty a default will be used -->
+    <add key="Content" value=""/>
+  </appSettings>
+</configuration>
