@@ -18,6 +18,7 @@ Now open the `discord-rss-webhook.dll.config` e.g. with Notepad/Editor and paste
   <appSettings>
     <add key="Webhook" value="https://discord.com/api/webhooks/{webhook.id}/{webhook.token}"/>
     <add key="Feed" value="https://lorem-rss.herokuapp.com/feed/"/>
+    <add key="UseExcerpt" value="true"/>
     <!-- Optional: Update interval in minutes, if empty or less than 1m or greater than 30d will default to 10m -->
     <add key="UpdateInterval" value=""/>
     <!-- Optional: Comma separated feed categories to be used as a filter, if empty all are used -->
@@ -57,5 +58,6 @@ Since there is no interaction needed or wanted with something that just delivers
 
 ### References
 - https://github.com/arminreiter/FeedReader
+- https://github.com/zzzprojects/html-agility-pack/
 - https://github.com/mbdavid/LiteDB
 - https://github.com/serilog/serilog

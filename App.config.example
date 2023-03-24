@@ -3,6 +3,7 @@
   <appSettings>
     <add key="Webhook" value="https://discord.com/api/webhooks/{webhook.id}/{webhook.token}"/>
     <add key="Feed" value="https://lorem-rss.herokuapp.com/feed/"/>
+    <add key="UseExcerpt" value="true"/>
     <!-- Optional: Update interval in minutes, if empty or less than 1m or greater than 30d will default to 10m -->
     <add key="UpdateInterval" value=""/>
     <!-- Optional: Comma separated feed categories to be used as a filter, if empty all are used -->

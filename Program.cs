@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using CodeHollow.FeedReader;
 using CodeHollow.FeedReader.Feeds;
+using HtmlAgilityPack;
 using LiteDB;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -13,6 +14,7 @@ namespace DiscordRssWebhook
     {
         private static readonly string? webHookUrl = ConfigurationManager.AppSettings["Webhook"];
         private static readonly string? feedUrl = ConfigurationManager.AppSettings["Feed"];
+        private static readonly string? useExcerpt = ConfigurationManager.AppSettings["UseExcerpt"];
         private static double updateInteval = 10.0;
         private static List<string> categories = new();
         private static string? userName = ConfigurationManager.AppSettings["UserName"];
@@ -28,9 +30,6 @@ namespace DiscordRssWebhook
 
         public static async Task<int> Main()
         {
-            // Initialize path
-            //var baseDir = AppContext.BaseDirectory;
-
             // Initialize serilog logger
             Log.Logger = new LoggerConfiguration()
                  .WriteTo.Console(Serilog.Events.LogEventLevel.Debug, theme: AnsiConsoleTheme.Literate)
@@ -141,7 +140,7 @@ namespace DiscordRssWebhook
                 embeds = new List<Embed>()
             };
 
-            // ToDo: Discord limit messages with embeds to 6000 characters. Exceeding this will result in a bad request...
+            // ToDo: Discord limits messages with embeds to 6000 characters. Exceeding this will result in a bad request...
 
             using (var db = new LiteDatabase(Path.Combine(baseDir, "FeedPosts.db")))
             {
@@ -152,8 +151,29 @@ namespace DiscordRssWebhook
 
                 foreach (var item in filteredItems)
                 {
-                    // check if post is already sent
+                    // Check if post was already sent
                     if (col.Exists(x  => x.PostGuid == item.Guid)) { continue; }
+
+                    var description = item.Description.Replace("[&#8230;]", "...");
+                    if (!string.IsNullOrEmpty(useExcerpt) && useExcerpt.ToLower() == "false")
+                    {
+                        // Remove html tags from string
+                        var doc = new HtmlDocument();
+                        doc.LoadHtml(item.Content.Replace("\n", "").Replace("<br>", "\n"));
+                        description = doc.DocumentNode.InnerText;
+                    }
+
+                    var fields = new List<Field>();
+                    if (item.Categories.Any())
+                    {
+                        var field = new Field();
+                        field.name = item.Categories.Count < 2 ? "Category" : "Categories";
+                        foreach (var category in item.Categories)
+                        {
+                            field.value += "`" + category + "` ";
+                        }
+                        fields.Add(field);
+                    }
 
                     var currentEmbed = new Embed
                     {
@@ -164,7 +184,8 @@ namespace DiscordRssWebhook
                         },
                         title = item.Title,
                         url = item.Link,
-                        description = ":mega: " + item.Description.Replace("[&#8230;]", "..."),
+                        description = ":mega: " + description,
+                        fields = fields,
                         footer = new Footer
                         {
                             text = item.PublishingDateString
