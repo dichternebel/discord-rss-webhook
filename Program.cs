@@ -154,12 +154,14 @@ namespace DiscordRssWebhook
                     // Check if post was already sent
                     if (col.Exists(x  => x.PostGuid == item.Guid)) { continue; }
 
+                    // Replace WP related 'read more' dots
                     var description = item.Description.Replace("[&#8230;]", "...");
+
                     if (!string.IsNullOrEmpty(useExcerpt) && useExcerpt.ToLower() == "false")
                     {
-                        // Remove html tags from string
                         var doc = new HtmlDocument();
-                        doc.LoadHtml(item.Content.Replace("\n", "").Replace("<br>", "\n"));
+                        // Remove html tags from content
+                        doc.LoadHtml(FormatText(item.Content));
                         description = doc.DocumentNode.InnerText;
                     }
 
@@ -219,6 +221,26 @@ namespace DiscordRssWebhook
                     Log.Logger.Error($"{result}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Replace HTML tags while keeping text formatting.
+        /// This was tested with some WP posts but you might need to change this for other feed types.
+        /// </summary>
+        /// <param name="htmlContent">HTML content string</param>
+        /// <returns>Formatted string for Discord message embed</returns>
+        private static string FormatText(string htmlContent)
+        {
+            var result = htmlContent.Replace("\n", "")
+                                    .Replace("<br>", "\n")
+                                    .Replace("<p></p>", "")
+                                    .Replace("</p>", "\n\n")
+                                    .Replace("<li>", "• ")
+                                    .Replace("</li>", "\n")
+                                    .Replace("</ol>", "\n")
+                                    .Replace("</ul>", "\n");
+
+            return result;
         }
     }
 }
